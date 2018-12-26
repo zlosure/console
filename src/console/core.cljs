@@ -9,11 +9,14 @@
 
 (defonce app-state (atom {:text "Hello world!"}))
 
+(defn foo
+  [x y]
+  (* x y 10))
 
 (defn hello-world []
   [:div
    [:h1 (:text @app-state)]
-   [:h3 "Wow watch it change!"]])
+   [:h3 (foo 1 2) " watch it change!"]])
 
 (reagent/render-component [hello-world]
                           (. js/document (getElementById "app")))
