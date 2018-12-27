@@ -6,10 +6,10 @@ COPY project.clj /console/project.clj
 
 RUN lein deps
 
-RUN lein cljsbuild once dev
+#RUN lein cljsbuild once dev
 
-EXPOSE 3449 7888
+EXPOSE 3449 55555
 
 COPY . /console
 
-CMD ["/bin/bash"]
+ENTRYPOINT ["top", "-b"]
