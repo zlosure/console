@@ -8,7 +8,8 @@
 
   :min-lein-version "2.7.1"
 
-  :dependencies [[org.clojure/clojure "1.9.0"]
+  :dependencies [[cljs-http "0.1.45"]
+                 [org.clojure/clojure "1.9.0"]
                  [org.clojure/clojurescript "1.10.238"]
                  [org.clojure/core.async  "0.4.474"]
                  [reagent "0.7.0"]]
@@ -26,6 +27,9 @@
                 ;; will cause figwheel to inject the figwheel client
                 ;; into your build
                 :figwheel {:on-jsload "console.core/on-js-reload"
+                           ;; Websocket server that the Browser can connect back
+                           ;; to. Uses `window.location.hostname` from JS for
+                           ;; GKE cluster service.
                            :websocket-host :js-client-host}
 
                 :compiler {:main console.core

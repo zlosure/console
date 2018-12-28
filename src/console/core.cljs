@@ -16,7 +16,14 @@
 (defn hello-world []
   [:div
    [:h1 (:text @app-state)]
-   [:h3 (foo 1 2) " watch it change!"]])
+   [:h3 (foo 1 2) " watch it change!"]
+   [:input {:type "button"
+            :value "Hello World"
+            :on-click #(prn "YAY!")}]
+   [:a {:href "10.27.241.168"} "invoker"]
+   [:input {:type "button"
+            :value "Connect"
+            :on-click #(prn "connected")}]])
 
 (reagent/render-component [hello-world]
                           (. js/document (getElementById "app")))
