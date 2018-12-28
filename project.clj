@@ -26,7 +26,7 @@
                 ;; will cause figwheel to inject the figwheel client
                 ;; into your build
                 :figwheel {:on-jsload "console.core/on-js-reload"
-                           :websocket-host "0.0.0.0"}
+                           :websocket-host :js-client-host}
 
                 :compiler {:main console.core
                            :asset-path "js/compiled/out"
