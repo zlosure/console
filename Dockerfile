@@ -12,4 +12,4 @@ EXPOSE 3449 55555
 
 COPY . /console
 
-ENTRYPOINT ["top", "-b"]
+ENTRYPOINT ["bin/entry-point"]
