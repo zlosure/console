@@ -1,5 +1,6 @@
 (ns console.core
   (:require [cljs-http.client :as http]
+            [cljs.core.async :as async :refer [<!]]
             [reagent.core :as reagent :refer [atom]]
             [re-com.core :as rc :refer [box
                                         button
@@ -11,7 +12,8 @@
                                         single-dropdown
                                         throbber
                                         title
-                                        v-box]]))
+                                        v-box]])
+  (:require-macros [cljs.core.async.macros :refer [go]]))
 
 (enable-console-print!)
 
@@ -43,6 +45,8 @@
                :on-change #(reset! action %)
                :width "120px"]]])
 
+(def target-input-status (atom nil))
+
 (defn target-input
   []
   [v-box
@@ -55,7 +59,10 @@
               [input-text
                :model target
                :on-change #(reset! target %)
+               :status @target-input-status
                :width "120px"]]])
+
+(def namespace-input-status (atom nil))
 
 (defn namespace-input
   []
@@ -69,6 +76,7 @@
               [input-text
                :model nspace
                :on-change #(reset! nspace %)
+               :status @namespace-input-status
                :width "120px"]]])
 
 (defn charts-branch-input
@@ -103,6 +111,20 @@
                :placeholder "master"
                :width "120px"]]])
 
+(defn invoke
+  []
+  (go (swap! app-state assoc :invoking? true)
+      (<! (http/post "http://invoker.admin:8080/api/v0.1/invoke"
+                     {:json-params (cond-> {:action @action
+                                            :namespace @nspace
+                                            :target @target}
+                                     (not-empty @charts-branch)
+                                     (assoc :charts-branch @charts-branch)
+
+                                     (not-empty @target-branch)
+                                     (assoc :target-branch @target-branch))}))
+      (swap! app-state assoc :invoking? false)))
+
 (defn console-panel
   []
   [v-box
@@ -125,14 +147,13 @@
               [h-box
                :children [[button
                            :class "btn-primary"
+                           :disabled? (:invoking? @app-state)
                            :label "invoke"
-                           :on-click
-                           #(do
-                              (swap! app-state assoc :invoking? true)
-                              (prn @action @charts-branch @nspace @target @target-branch))
+                           :on-click invoke
                            :tooltip "Run the command in your cluster."
                            :tooltip-position :below-center]
-                          (when (:invoking? @app-state) [throbber])]
+                          (when (:invoking? @app-state) [throbber
+                                                         :color "blue"])]
                :gap "10px"
                :size "auto"]]])
 
